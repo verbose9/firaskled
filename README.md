@@ -1,3 +1,5 @@
-# React Dashboard
+# FiraSkled
 
-Some thing awesome will be here soon...
+The powerful chat app built with Firebase and React.
+
+## Awesome...
