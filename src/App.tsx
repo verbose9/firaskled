@@ -1,12 +1,12 @@
 import firebase from './backend';
 import 'firebase/auth';
 import React, { useState, useEffect } from 'react';
-import Chatroom from './components/chatroom';
+import { Chatroom, Error, Intro, Loader } from './components';
 
-const App: React.FC = () => {
+function App() {
   const [user, setUser] = useState<firebase.User | null>(null);
   const [err, setErr] = useState<null | Error>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   // [Start] Sign Out
   const handleSignOut: React.MouseEventHandler<HTMLButtonElement> = () => {
     firebase
@@ -17,9 +17,9 @@ const App: React.FC = () => {
       });
   };
   // [End] Sign Out
-  // [Start] Authentication
   //
-  const handleClick: React.MouseEventHandler<HTMLButtonElement> = () => {
+  // [Start] Authentication/Sign In
+  const handleSignIn: React.MouseEventHandler<HTMLButtonElement> = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase
       .auth()
@@ -34,40 +34,36 @@ const App: React.FC = () => {
         setErr(err);
       });
   };
-  // [End]
+  // [End] Authentication/Sign In
   //
-  // Check Auth State
-  useEffect(() => {
+  // [Start] Check Auth State(User does not has to sign in manually everytime he visits)
+  useEffect((): void => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) setUser(user);
       setLoading(false);
     });
   }, []);
+
+  // [End] Check Auth State
+  // The main thing...
   return (
     <div className="h-screen max-h-screen overflow-auto">
       {err && (
-        <div className="py-2 px-4 bg-red-100 text-red-600 rounded-lg fixed bottom-0 right-0 m-8">
-          Whoops...{err.message} Retry Later.
-        </div>
+        <Error
+          err={err}
+          handleDismiss={() => {
+            setErr(null);
+          }}
+        />
       )}
 
       {user && <Chatroom user={user} handleSignOut={handleSignOut} />}
 
-      {!loading && !user && (
-        <div className="m-8">
-          <h1 className="text-black font-bold text-4xl mb-8">
-            Welcome, Sign in with Google
-          </h1>
-          <button
-            onClick={handleClick}
-            className="bg-blue-500 rounded-lg px-8 py-2 text-white focus:outline-none hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Sign In
-          </button>
-        </div>
-      )}
+      {!loading && !user && <Intro handleSignIn={handleSignIn} />}
+
+      {loading && <Loader />}
     </div>
   );
-};
+}
 
 export default App;
