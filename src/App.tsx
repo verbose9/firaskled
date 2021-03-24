@@ -2,7 +2,7 @@ import firebase from './backend';
 import 'firebase/auth';
 import React, { useState, useEffect } from 'react';
 import { Chatroom, Error, Intro, Loader } from './components';
-
+import ChatroomMock from './components/ChatroomMock';
 function App() {
   const [user, setUser] = useState<firebase.User | null>(null);
   const [err, setErr] = useState<null | Error>(null);
@@ -20,6 +20,7 @@ function App() {
   //
   // [Start] Authentication/Sign In
   const handleSignIn: React.MouseEventHandler<HTMLButtonElement> = () => {
+    setLoading(true);
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase
       .auth()
@@ -28,10 +29,12 @@ function App() {
         if (res.user) {
           setUser(res.user);
           setErr(null);
+          setLoading(false);
         }
       })
       .catch((err: Error) => {
         setErr(err);
+        setLoading(false);
       });
   };
   // [End] Authentication/Sign In
@@ -57,9 +60,9 @@ function App() {
         />
       )}
 
-      {user && <Chatroom user={user} handleSignOut={handleSignOut} />}
-
-      {!loading && !user && <Intro handleSignIn={handleSignIn} />}
+      {/* {user && <Chatroom user={user} handleSignOut={handleSignOut} />} */}
+      <ChatroomMock />
+      {/* {!loading && !user && <Intro handleSignIn={handleSignIn} />} */}
 
       {loading && <Loader />}
     </div>

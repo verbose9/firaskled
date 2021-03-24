@@ -1,4 +1,6 @@
 .snowpack
+.vscode
+build/
 # Logs
 logs
 *.log
